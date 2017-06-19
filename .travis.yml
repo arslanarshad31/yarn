@@ -41,13 +41,23 @@ matrix:
   include:
     - os: osx
       node_js: "6"
-      env: TEST_TYPE="test-ci -- -- --maxWorkers 3"
+      env: TEST_TYPE="test-ci -- -- --maxWorkers 2"
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/bootstrap-env-ubuntu.sh; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn; fi
-  - node --version
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      RAMDISK_SIZE=300;
+      RAMDISK_SECTORS=$(( $RAMDISK_SIZE * 1024 * 1024 / 512 ));
+      RAMDISK=$(hdiutil attach -nomount ram://$RAMDISK_SECTORS);
+      newfs_hfs -v yarn_ramfs $RAMDISK;
+      mkdir -p /tmp/ramfs;
+      mount -t hfs -o nobrowse $RAMDISK /tmp/ramfs;
+      rsync -a ./__tests__/ /tmp/ramfs;
+      umount /tmp/ramfs;
+      mount -t hfs -o nobrowse $RAMDISK ./__tests__;
+      export TMPDIR="$(pwd)/__tests__/.tmp";
+      mkdir -p $TMPDIR;
+    fi
 
 os:
   - linux
