@@ -120,11 +120,15 @@ test('RequestManager.request with mutual TLS', async () => {
 });
 
 test('RequestManager.execute timeout error with maxRetryAttempts=1', async () => {
-  jest.useRealTimers();
+  jest.useFakeTimers();
 
   let counter = 0;
   const server = net.createServer(c => {
     counter += 1;
+    
+    // Trigger our offline retry queue which has a fixed 3 sec delay
+    c.on('close', jest.runOnlyPendingTimers.bind(jest));
+
     // emulate TCP server that never closes the connection
   });
 
@@ -145,11 +149,14 @@ test('RequestManager.execute timeout error with maxRetryAttempts=1', async () =>
 });
 
 test('RequestManager.execute timeout error with default maxRetryAttempts', async () => {
-  jest.useRealTimers();
+  jest.useFakeTimers();
 
   let counter = 0;
   const server = net.createServer(c => {
     counter += 1;
+
+    // Trigger our offline retry queue which has a fixed 3 sec delay
+    c.on('close', jest.runOnlyPendingTimers.bind(jest));
     // emulate TCP server that never closes the connection
   });
 
