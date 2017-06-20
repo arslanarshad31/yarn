@@ -46,17 +46,13 @@ matrix:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/bootstrap-env-ubuntu.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      RAMDISK_SIZE=390;
+      RAMDISK_SIZE=256;
       RAMDISK_SECTORS=$(( $RAMDISK_SIZE * 1024 * 1024 / 512 ));
       RAMDISK=$(hdiutil attach -nomount ram://$RAMDISK_SECTORS);
       newfs_hfs -v yarn_ramfs $RAMDISK;
-      mkdir -p /tmp/ramfs;
-      mount -t hfs -o nobrowse $RAMDISK /tmp/ramfs;
-      rsync -a ./__tests__/ /tmp/ramfs;
-      umount /tmp/ramfs;
-      mount -t hfs -o nobrowse $RAMDISK ./__tests__;
-      export TMPDIR="$(pwd)/__tests__/.tmp";
+      export TMPDIR="/tmp/ramfs";
       mkdir -p $TMPDIR;
+      mount -t hfs -o nobrowse $RAMDISK $TMPDIR;
     fi
 
 os:
