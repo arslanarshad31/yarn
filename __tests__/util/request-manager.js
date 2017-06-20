@@ -145,6 +145,7 @@ test('RequestManager.execute timeout error with maxRetryAttempts=1', async () =>
     expect(counter).toEqual(1);
   } finally {
     server.close();
+    jest.useRealTimers();
   }
 });
 
@@ -172,6 +173,7 @@ test('RequestManager.execute timeout error with default maxRetryAttempts', async
     expect(counter).toEqual(5);
   } finally {
     server.close();
+    jest.useRealTimers();
   }
 });
 
