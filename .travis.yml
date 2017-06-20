@@ -46,7 +46,7 @@ matrix:
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./scripts/bootstrap-env-ubuntu.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      RAMDISK_SIZE=256;
+      RAMDISK_SIZE=384;
       RAMDISK_SECTORS=$(( $RAMDISK_SIZE * 1024 * 1024 / 512 ));
       RAMDISK=$(hdiutil attach -nomount ram://$RAMDISK_SECTORS);
       newfs_hfs -v yarn_ramfs $RAMDISK;
