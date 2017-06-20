@@ -125,7 +125,7 @@ test('RequestManager.execute timeout error with maxRetryAttempts=1', async () =>
   let counter = 0;
   const server = net.createServer(c => {
     counter += 1;
-    
+
     // Trigger our offline retry queue which has a fixed 3 sec delay
     c.on('close', jest.runOnlyPendingTimers.bind(jest));
 
